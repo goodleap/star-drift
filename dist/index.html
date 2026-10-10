@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0c0d13">
+  <meta name="description" content="星际闪避 STAR DRIFT：一场说走就走的太空冒险。躲开陨石，收集星光，挑战你的最高纪录。支持键盘和手机触控。">
+  <title>星际闪避 · STAR DRIFT</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./game.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Star Drift 首页"><span class="brand-mark" aria-hidden="true">✦</span><span>STAR<span class="brand-light">DRIFT</span><small>小宇宙，大冒险。</small></span></a>
+    <nav aria-label="主导航"><span class="nav-active">街机游戏<span class="tiny-dot"></span></span><button class="text-button guide-open">游戏指南 <span>↗</span></button></nav>
+    <button id="sound-button" class="sound-button" aria-pressed="false" title="开启游戏音效"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M11 5 5 9H2v6h3l6 4V5Z"/><path id="sound-waves" d="m16 9 6 6m0-6-6 6"/></svg><span id="sound-label">音效关闭</span></button>
+  </header>
+
+  <main>
+    <section class="intro" aria-label="游戏介绍"><div><p class="eyebrow"><span></span> YOUR NEXT LITTLE ESCAPE</p><h1>星际闪避<span class="title-star" aria-hidden="true">✳</span></h1><p class="subtitle">把烦恼留在地球。现在，去星空里兜个风。</p></div><div class="edition"><span>ORBITAL ARCADE</span><strong>001<span> / ∞</span></strong><span>JUST ONE MORE RUN.</span></div></section>
+
+    <div class="game-layout">
+      <section id="game-shell" class="game-shell" aria-label="星际闪避游戏区">
+        <canvas id="game" width="1000" height="700" tabindex="0" aria-label="游戏画布。使用方向键或 WASD 移动，空格冲刺，P 或 Escape 暂停。"></canvas>
+        <div class="game-vignette" aria-hidden="true"></div>
+        <div class="game-hud"><div class="hud-score"><span>SCORE / 得分</span><strong id="score">00000</strong></div><div id="sector" class="sector"><span class="live-dot"></span> 第 01 星区</div><div class="hud-right"><div class="lives" aria-label="剩余护盾"><span class="life on"></span><span class="life on"></span><span class="life on"></span><small id="lives-text">3</small></div><button id="pause-button" class="icon-button" aria-label="暂停游戏" title="暂停 P" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3" height="12" rx="1"/><rect x="12" y="4" width="3" height="12" rx="1"/></svg></button></div></div>
+
+        <div id="start-screen" class="overlay start-screen">
+          <div class="orbit-symbol" aria-hidden="true"><span>✦</span></div>
+          <p class="screen-eyebrow">READY WHEN YOU ARE</p><h2>宇宙很大，<br>这一秒属于你。</h2><p class="screen-description">躲开陨石 · 收集星光 · 冲向新纪录</p>
+          <div class="difficulty" role="group" aria-label="选择难度"><button data-level="easy">轻松漫游</button><button data-level="normal" class="selected" aria-pressed="true">标准挑战</button><button data-level="hard">极限穿梭</button></div>
+          <button id="start-button" class="primary-button">开始飞行 <span aria-hidden="true">↗</span></button><p class="start-hint"><span class="keyboard-hint">或按 <kbd>Enter</kbd> 出发</span><span class="touch-hint">按住并拖动飞船，即可控制方向</span></p>
+        </div>
+
+        <div id="pause-screen" class="overlay hidden"><span class="pause-symbol" aria-hidden="true">Ⅱ</span><p class="screen-eyebrow">TAKE A BREATH</p><h2>宇宙可以等一等。</h2><p class="screen-description">准备好后，继续你的旅程。</p><button id="resume-button" class="primary-button">继续飞行 <span aria-hidden="true">→</span></button><button id="restart-paused" class="secondary-button">重新开始</button></div>
+
+        <div id="end-screen" class="overlay hidden"><p id="record-badge" class="record-badge">✦ 本次航行完成</p><h2>每一次出发，<br>都能更远一点。</h2><div class="final-score"><span>本次得分</span><strong id="final-score">0</strong></div><div class="final-stats"><div><strong id="final-time">0s</strong><span>飞行时间</span></div><div><strong id="final-stars">0</strong><span>收集星光</span></div><div><strong id="final-sector">01</strong><span>抵达星区</span></div></div><button id="again-button" class="primary-button">再飞一次 <span aria-hidden="true">↗</span></button><button id="back-button" class="secondary-button">返回出发页</button></div>
+
+        <div id="game-toast" class="game-toast" aria-live="polite"></div>
+        <div class="game-bottom"><span id="flight-status"><i></i> 飞船就绪，等待出发</span><button id="dash-button" class="dash-button" disabled><span class="dash-icon" aria-hidden="true">ϟ</span><span id="dash-label">冲刺就绪</span><kbd>SPACE</kbd><span id="dash-progress"></span></button></div>
+      </section>
+
+      <aside class="sidebar">
+        <section class="best-card"><div class="card-heading"><span class="eyebrow">PERSONAL BEST</span><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 3h8v6a4 4 0 0 1-8 0V3ZM8 5H4v3c0 3 2 4 5 4m7-7h4v3c0 3-2 4-5 4m-3 2v5m-5 2h10"/></svg></div><h3>你的最高纪录</h3><div class="best-value"><strong id="best-score">0</strong><span>PTS</span></div><p id="best-caption">第一段传奇，就从这次出发。</p><div class="best-card-bottom"><span class="tiny-dot"></span> <span id="best-mode">标准挑战</span><span>保存在此浏览器</span></div></section>
+
+        <section class="controls-card"><p class="eyebrow">FLIGHT MANUAL</p><h3>三秒上手，即刻出发。</h3><div class="control-row"><div class="key-cluster"><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd></div><div><strong>自由移动</strong><span>方向键 / WASD / 拖动</span></div></div><div class="control-row"><kbd class="space-key">SPACE</kbd><div><strong>无敌冲刺</strong><span>短暂无敌，5 秒后充能</span></div></div><div class="control-row"><kbd class="pause-key">P</kbd><div><strong>随时暂停</strong><span>休息一下，宇宙不赶时间</span></div></div><div class="object-legend"><div><span class="legend-star">✦</span><span>星光<strong>+50 分</strong></span></div><div><span class="legend-shield">◇</span><span>护盾<strong>恢复 1 格</strong></span></div><div><span class="legend-rock">⬡</span><span>陨石<strong>记得躲开</strong></span></div></div></section>
+        <div class="pilot-tip"><span aria-hidden="true">↳</span><p>飞行员小贴士<strong id="pilot-tip">不用急着收集每颗星光，<br>安全抵达下一秒更重要。</strong></p></div>
+      </aside>
+    </div>
+
+    <section class="mission-strip" aria-label="游戏特色"><div><span>01</span><p>不用下载<strong>打开就能玩</strong></p><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14 3v15m-6-6 6 6 6-6M5 20v5h18v-5"/></svg></div><div><span>02</span><p>每局都是新的开始<strong>越飞越有挑战</strong></p><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" aria-hidden="true"><path d="m3 22 7-8 5 4L25 5m-8 0h8v8"/></svg></div><div><span>03</span><p>你的节奏，你的宇宙<strong>随时玩，随时停</strong></p><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="14" cy="14" r="10"/><path d="M14 7v7l5 3"/></svg></div></section>
+  </main>
+  <footer><span>STAR DRIFT <span class="footer-star">✦</span> MADE FOR YOUR LITTLE BREAKS</span><span>在浩瀚里，找一点小快乐。</span></footer>
+
+  <dialog id="guide-dialog"><div class="dialog-head"><span class="eyebrow">FLIGHT MANUAL</span><button id="close-guide" class="icon-button" aria-label="关闭指南">×</button></div><h2>欢迎登机，飞行员。</h2><p>目标很简单：飞得久一点，带回更多星光。</p><ol><li><strong>控制飞船</strong><span>使用方向键或 WASD 移动。手机上在游戏区拖动，飞船会跟随你的手指。</span></li><li><strong>收集与闪避</strong><span>每存活 1 秒得 10 分，每颗星光得 50 分。碰到陨石损失 1 格护盾，护盾耗尽即结束。</span></li><li><strong>抓住冲刺时机</strong><span>空格或右下方冲刺按钮：短暂加速并无敌 0.65 秒，冷却 5 秒。蓝色补给恢复 1 格护盾。</span></li><li><strong>挑战自己</strong><span>每 15 秒进入下一星区，陨石逐渐加速。三种难度分别保存最高纪录。P / Escape 暂停，切到后台也会自动暂停。</span></li></ol><p class="dialog-note">最高纪录只保存在当前浏览器。清除浏览器数据后会重置。</p><button id="guide-done" class="primary-button">明白了，准备出发 <span>↗</span></button></dialog>
+</body>
+</html>
